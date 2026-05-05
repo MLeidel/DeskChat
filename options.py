@@ -39,7 +39,7 @@ class Application(Frame):
         lbl = Label(self, text='Font Response Size')
         lbl.grid(row=6, column=1, sticky='e', pady=4, padx=4)
 
-        lbl = Label(self, text='Model')
+        lbl = Label(self, text='Models')
         lbl.grid(row=7, column=1, sticky='e', pady=4, padx=4)
 
         lbl = Label(self, text='Button Color')
@@ -203,7 +203,7 @@ class Application(Frame):
             Notify user that the Options window will close '''
         result = messagebox.askyesno("Attension",
                             "Options will Close.\nSave any changes first?")
-        subprocess.Popen([MyEditor, "options.ini"])
+        subprocess.Popen([MyEditor, "models.dat"])
         if result:
             self.on_close()
         else:

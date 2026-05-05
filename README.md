@@ -63,12 +63,12 @@ Here are the vendors, websites, and key labels to use in your environment:
 
 | Vendor | Website | ENVariable | 
 | :--- | :--- | :--- |
-| OpenAI | https://platform.openai.com | **OPENAI_API_KEY** |
+| OpenAI | https://platform.openai.com | **GPTKEY** |
 | Anthropic | https://claude.ai/settings | **CLDKEY** |
-| Google | https://aistudio.google.com | **api_key** |
-| Ollama | https://ollama.com/settings | **OLLAMA_API_KEY** |
-| groq | https://console.groq.com/keys | **GROQ_KEY** |
-| Deepseek | https://platform.deepseek.com | **DSEEK1** |
+| Google | https://aistudio.google.com | **GGLKEY** |
+| Ollama | https://ollama.com/settings | **OMAKEY** |
+| groq | https://console.groq.com/keys | **GRQKEY** |
+| Deepseek | https://platform.deepseek.com | **DSKKEY** |
 
 Windows and Linux have their own way to set these variables.
 
@@ -120,10 +120,11 @@ Each play-back is saved in a separate file in the application directory.
         rag_gemma4:e4b
         rag_gemma4:e2b
 
-Note:
-    for local models obtained from Ollama append the model name with `-local`
-    Only Ollama local models are used with RAG. Prepend those with `rag-`
-    Modify this file for only the models you use.
+**Note:**  
+    for **local** models obtained from Ollama append the model name with `-local`  
+    for **cloud** models obtained from Ollama append the model name with `-cloud`  
+    Only Ollama local models are used with RAG. Prepend those with `rag-`  
+    Modify this file for what ever models you use.
 
 ---
 
