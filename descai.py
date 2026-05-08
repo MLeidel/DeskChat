@@ -3,13 +3,13 @@
 '''
 descai.py
 Linux and Windows ONLY
-Apr 2026 - added local models and RAG
+Apr 2026 - added local models
     by Michael Leidel
+May 2026 - added RAG (File API) for Gemini models
 
 Disclaimer: This software is provided free of charge and "as is," without any warranties,
 express or implied. The author and contributors assume no responsibility for any damages,
 data loss, or other issues arising from its use. Use at your own risk.
-art: miniwi
 
 '''
 import os
@@ -41,25 +41,11 @@ from ollama import chat
 from groq import Groq
 import anthropic
 import vocvlc
-import glob
-
-#import google.generativeai as genai
 from google import genai
 from google.genai import types
 
-# for RAG
-from operator import itemgetter
-from langchain_community.document_loaders import TextLoader, PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_ollama import OllamaEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain_ollama import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableLambda, RunnableParallel
 
 apptitle = "DescAI 2.0 "
-EMBED_MODEL = "nomic-embed-text"  # Ollama
 
 class Application(Frame):
     ''' This tkinter GUI app provides a flexible dual vertical pane
@@ -68,7 +54,7 @@ class Application(Frame):
         and the AI responses go in the bottom pane.
 
         Currently the API code supports many
-        Gpt, Claude, Gemini, Ollama, Deepseek, and Groq LLM's.
+        Gpt, Claude, Gemini, Ollama, and Groq LLM's.
     '''
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -76,6 +62,8 @@ class Application(Frame):
         self.Saved = True
         self.cpath = "conversation.json"
         self.playback = False
+        self.rag_initiated = False
+        self.Gs = None
 
         # get settings from ini file
         config = configparser.ConfigParser()
@@ -314,13 +302,13 @@ class Application(Frame):
 
         self.query.focus_set()
 
-        #-----------------------------------------------------------
+        #
         # on startup check for conversation.json file
         # The user may have the option to continue the converstation or start fresh.
         #
-        self.conversation = self.load_buffer(self.cpath)  # if there is an existing conversation file
+        self.conversation = self.load_buffer(self.cpath)
 
-        if self.conversation == []:  # was NO conversation file
+        if self.conversation == []:
             if not self.MyModel.startswith("claude"):
                 # and not self.MyModel.startswith("gemini":
                 self.conversation = [
@@ -330,7 +318,8 @@ class Application(Frame):
                 os.remove(self.cpath)
         else:
             self.on_new()
-        #------------------------------------------------------------
+
+#----------------------------------------------------------------------
 
     def set_intro(self):
         ''' A "start" screen providing helpful information
@@ -374,10 +363,6 @@ class Application(Frame):
         self.txt.delete("1.0", END)
         self.txt.insert("1.0", self.set_intro())
 
-    def display_result_message(self, msg):
-        self.txt.delete("1.0", END)
-        self.txt.insert("1.0", msg )
-        self.txt.update_idletasks()
 
     def show_prompts(self, fword: str):
         ''' Open and display the prompt text file. '''
@@ -632,7 +617,7 @@ class Application(Frame):
             ai_text = full_response
 
         except Exception as e:
-            wx.MessageBox(str(e), 'Info', wx.OK | wx.ICON_ERROR)
+            messagebox.showerror("Client Error", str(e))
             ai_text = ""
 
         return ai_text
@@ -726,36 +711,66 @@ class Application(Frame):
         return ai_text
 
     '''
-        RAG API
-        RAG API
-        RAG API
+        ▄▖     ▘  ▘  ▄▖▄▖▄▖
+        ▌ █▌▛▛▌▌▛▌▌  ▙▘▌▌▌
+        ▙▌▙▖▌▌▌▌▌▌▌  ▌▌▛▌▙▌
+
     '''
-    def rag_api(self):
+
+    def rag_gemini_api(self, query):
         '''  '''
-        q = self.query.get("1.0", END).strip()
-        if q == "" or q == None:
+
+        if self.vw.get() == 1:
+            messagebox.showwarning("Web Search","Web Search is not available with RAG.")
+            self.query.delete("1.0", END)
+            self.display_intro()
+            return ""
+
+        if query == "" or query == None:
             ai_text = ""
             return # abort
 
-        result = self.rag.invoke({"question": q})
 
-        # print("\nAnswer:\n", result["answer"].strip(), "\n")
-        ai_text = result["answer"].strip() + "\n\n"
+        if self.rag_initiated is False:
+            paths = filedialog.askopenfilenames(
+                title="Select files",
+                initialdir=os.getcwd(),
+                filetypes=[("Text files","*.txt"),
+                           ("PDF files","*.pdf"),
+                           ("MD files","*.md"),
+                           ("CSV files","*.csv"),
+                           ("HTML files","*.html"),
+                           ("All files","*.*")
+                ]
+            )  # returns a tuple3
+            if paths == ():
+                messagebox.showerror("No files selected")
+                return ""
 
-        # print("Sources:")
-        for i, sd in enumerate(result.get("source_documents", []), 1):
-            src = sd.metadata.get("source", "unknown")
-            page = sd.metadata.get("page", None)
-            page_info = f" (page {page})" if page is not None else ""
-            # print(f"  {i}. {src}{page_info}")
-            ai_text += f"  {i}. {src}{page_info}\n"
+            self.Gs = GeminiSession(self.MyModel[4:].strip())
+
+            # message to user
+            self.txt.delete("1.0", END)
+            self.txt.insert("1.0", "Uploading files for RAG..." )
+            self.txt.update_idletasks()
+
+            self.Gs.start_session(paths)
+            self.rag_initiated = True
+
+        # process prompts ... only after 1 'rag_initiated'
+        # message to user
+        self.txt.delete("1.0", END)
+        self.txt.insert("1.0", "Thinking ..." )
+        self.txt.update_idletasks()
+
+        ai_text = self.Gs.ask(query)
 
         return ai_text
 
 
-    #################
-    ### ON SUBMIT ###
-    #################
+    ################# -----------------------------------------------
+    ### ON SUBMIT ### -----------------------------------------------
+    ################# -----------------------------------------------
 
     def on_submit(self, event=None):
         ''' Event handler for Submit button (Ctrl-G).
@@ -796,8 +811,8 @@ class Application(Frame):
             ai_text = self.api_claude_opus()
         elif self.MyModel.startswith("gemini"):
             ai_text = self.api_gemini()
-        elif self.MyModel.startswith("rag_"):
-            ai_text = self.rag_api()
+        elif self.MyModel.startswith("rag_gemini"):
+            ai_text = self.rag_gemini_api(query)
         elif self.MyModel.endswith("cloud"):
             ai_text = self.api_ollama_cloud()
         elif self.MyModel.startswith("groq"):
@@ -807,7 +822,7 @@ class Application(Frame):
         else:
             ai_text = ""
 
-        if ai_text == "" or ai_text == None:
+        if ai_text == "":
             self.query.delete("1.0", END)
             self.display_intro()
             return
@@ -858,18 +873,16 @@ class Application(Frame):
     def new_conversation(self):
         ''' start new conversation '''
         self.conversation.clear()
-        self.google_new = True  # Gemini API is temporary always???
-
-        # check for RAG requested
-        if self.MyModel.startswith("rag_"):
-            self.rag_main()
-            return
-        else:
-            # check for system message change
-            usertext = self.query.get("1.0", END)
-            if usertext.lower().startswith("instruct"):
-                self.MySystem = usertext[9:].strip()
-
+        self.google_new = True  # Gemini API is temporary always
+        # if rag_initialted: ...
+        if self.rag_initiated is True:
+            self.Gs.cleanup()
+            del self.Gs
+            self.rag_initiated = False
+        # check for system message change
+        usertext = self.query.get("1.0", END)
+        if usertext.lower().startswith("instruct"):
+            self.MySystem = usertext[9:].strip()
         # set the system message
         if self.MyModel.startswith("claude"):
             self.conversation = []
@@ -942,6 +955,7 @@ class Application(Frame):
         self.txt.see(END)
         self.query.delete("1.0", END)
         self.after(400, self.highlight)
+
 
 
     def reLaunch(self):
@@ -1086,7 +1100,7 @@ Ctrl-N > Find Next Text
 Ctrl-J > Open Selected URL
 Ctrl-Q > Exit Program no ask
 Ctrl-R > Clear prompt area
-Ctrl-E > Open Text Editor
+Ctrl-E > Open in Text Editor
 Alt-P > Open Prompt Manager
         '''
         messagebox.showinfo("Hot Keys Help", msg)
@@ -1438,148 +1452,85 @@ Alt-P > Open Prompt Manager
                 return
         save_location()
 
-# RAG processing
 #------------------------------------------------------------
+class GeminiSession:
+    ''' This class is used for the Gemini Rag requests '''
+    def __init__(self, model_id="gemini-2.5-flash-lite"):
+        self.model_id = model_id
+        self.chat = None
+        self.client = genai.Client(api_key=os.environ.get("GGLKEY"))
+        self.uploaded_files = []
 
-    def choose_dir(self) -> str:
-        # Open a dialog to select a directory
-        dirpath = filedialog.askdirectory(
-            title="Select a directory",
-            initialdir=os.path.expanduser("~"),  # start at the user's home directory
-            mustexist=True
-        )
-        if dirpath:
-            return dirpath
-        else:
-            return "no dir"
+    def start_session(self, file_paths, initial_prompt="I am providing file(s) for context."):
+        '''  '''
+        print(file_paths)
+        for path in file_paths:
+            print(f"Uploading {os.path.basename(path)}...")
+            myfile = self.client.files.upload(file=path)
+            while myfile.state.name == "PROCESSING":
+                time.sleep(2)
+                myfile = self.client.files.get(name=myfile.name)
 
-    def collect_files(self, path):
-        if os.path.isdir(path):
-            patterns = ["**/*.txt", "**/*.md", "**/*.pdf"]
-            files = []
-            for pat in patterns:
-                files.extend(glob.glob(os.path.join(path, pat), recursive=True))
-            return files
-        else:
-            return [path]
+            self.uploaded_files.append(myfile)
 
+        # default mime types supported
+        # PDF: application/pdf
+        # Plain Text: text/plain
+        # Comma-Separated Values: text/csv
+        # Markdown: text/markdown (Note: Often handled as text/plain)
 
-    def load_documents(self, path_or_dir):
-        files = self.collect_files(path_or_dir)
-        docs = []
-        for f in files:
-            ext = os.path.splitext(f)[1].lower()
-            try:
-                if ext in [".txt", ".md"]:
-                    docs.extend(TextLoader(f, autodetect_encoding=True).load())
-                elif ext == ".pdf":
-                    docs.extend(PyPDFLoader(f).load())
-            except Exception as e:
-                print(f"Warning: failed to load {f}: {e}")
-        if not docs:
-            raise RuntimeError("No documents loaded. Supported: .txt, .md, .pdf")
-        return docs
+        # HTML: text/html
+        # Initialize Chat with file in history
+        file_parts = [
+            types.Part.from_uri(
+                file_uri=f.uri,
+                mime_type = f.mime_type,
+            ) for f in self.uploaded_files
+        ]
 
+        all_parts = file_parts + [types.Part.from_text(text=initial_prompt)]
 
-    def build_vectorstore(self, docs):
-        splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=120)
-        chunks = splitter.split_documents(docs)
-
-        embeddings = OllamaEmbeddings(model=EMBED_MODEL)
-        vs = FAISS.from_documents(chunks, embeddings)
-        return vs
-
-
-    def build_rag_chain(self, retriever):
-        # Prompt
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", "You are a helpful assistant. Answer the question using ONLY the provided context. "
-                           "If the answer cannot be found in the context, say you don't know."),
-                ("human", "Context:\n{context}\n\nQuestion: {question}")
+        # Initialize the chat
+        self.chat = self.client.chats.create(
+            model=self.model_id,
+            history=[
+                types.Content(
+                    role="user",
+                    parts=all_parts
+                )
             ]
         )
 
-        # Local LLM (Ollama)
-        llm = ChatOllama(model=self.rag_model, temperature=0)
+    def ask(self, message):
+        ''' 1st and following prompts use this method '''
+        if not message:
+            return "Error: The prompt or file content is empty."
+        # for testing ...
+        if self.chat:
+            response = self.chat.send_message(message)
+            return response.text
 
-        # Format retrieved docs into a context string
-        def _format_docs(docs):
-            parts = []
-            for d in docs:
-                src = d.metadata.get("source", "unknown")
-                page = d.metadata.get("page")
-                page_info = f" (page {page})" if page is not None else ""
-                parts.append(f"Source: {src}{page_info}\n{d.page_content}")
-            return "\n\n---\n\n".join(parts)
+        return "No active session."
 
-        format_docs = RunnableLambda(_format_docs)
 
-        # Build LCEL graph that returns both the answer and the source documents
-        # 1) A sub-chain that requires {question, docs} and produces the final answer
-        answer_chain = (
-            {
-                "context": itemgetter("docs") | format_docs,
-                "question": itemgetter("question"),
-            }
-            | prompt
-            | llm
-            | StrOutputParser()
-        )
+    # def cleanup(self):
+    #     if self.active_file:
+    #         self.client.files.delete(name=self.active_file.name)
 
-        # 2) Retrieval is wired once and fanned out to both the answer and sources
-        retrieval = itemgetter("question") | retriever
+    def cleanup(self):
+        # Check if the list exists and has contents
+        if hasattr(self, 'uploaded_files') and self.uploaded_files:
+            for file_obj in self.uploaded_files:
+                try:
+                    print(f"Deleting {file_obj.name}...")
+                    self.client.files.delete(name=file_obj.name)
+                except Exception as e:
+                    print(f"Failed to delete {file_obj.name}: {e}")
 
-        rag_with_sources = RunnableParallel(
-            {
-                "answer": {"question": itemgetter("question"), "docs": retrieval} | answer_chain,
-                "source_documents": retrieval,
-            }
-        )
+            # Clear the list after deletion to avoid double-deletion attempts
+            self.uploaded_files = []
 
-        return rag_with_sources
-
-    # RAG Main  -------------------------------------
-
-    def rag_main(self):
-        '''  '''
-        self.rag_model = self.MyModel[4:].strip()
-        # print(self.rag_model)
-        embeddings = OllamaEmbeddings(model=EMBED_MODEL)
-
-        ddirectory = self.choose_dir()
-        if ddirectory == "no dir":
-            return # abort process
-
-        index_path = os.path.join(ddirectory, "index.faiss")
-        if os.path.exists(index_path):
-            self.display_result_message(f"Loading existing FAISS index from: {ddirectory}")
-            vs = FAISS.load_local(ddirectory, embeddings, allow_dangerous_deserialization=True)
-        else:
-            self.display_result_message(f"Loading documents from: {ddirectory}")
-            docs = self.load_documents(ddirectory)
-
-            self.display_result_message("Building vector store (this may take a moment on first run)...")
-            vs = self.build_vectorstore(docs)
-
-            # "Saving FAISS index to: {ddirectory}"
-            vs.save_local(ddirectory)
-
-        retriever = vs.as_retriever(search_kwargs={"k": 4}) # limits nbr of chunks from the docs
-        self.rag = self.build_rag_chain(retriever)
-
-        read_msg = '''
-    RAG (LCEL) ready. Ask questions about your documents.
-    system: You are a helpful assistant.
-            Answer the question using ONLY the provided context.
-            If the answer cannot be found in the context, say you don't know.
-    Supported doc types: .txt, .md, .pdf
-        '''
-        self.display_result_message(read_msg)
-
-        # Submiting prompts will recognize "rag_" model and handle it.
-        # RAG processing ends with "New" or closing app.
-#-----------------------------------------------------------------------
+#-----------------------------------------------------------
 
 # SAVE GEOMETRY INFO AND EXIT
 def save_location(e=None):
