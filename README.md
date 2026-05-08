@@ -14,7 +14,7 @@
 -  Renders HTML from Markdown
 -  Choose from many themes and colors
 -  Pop-up Prompt Manager and Options Manager
--  RAG for .pdf .md .txt documents
+-  RAG for .pdf .md .txt .csv .html documents
 
 _requires modules_  
 
@@ -25,12 +25,6 @@ _requires modules_
         Markdown
         ttkbootstrap==1.14.2
         groq
-        langchain 
-        langchain-community
-        langchain-text-splitters 
-        langchain-ollama 
-        langchain-core
-        faiss-cpu
 
 _Uses Python and tkinter_
 
@@ -104,6 +98,7 @@ Each play-back is saved in a separate file in the application directory.
         gemini-2.5-flash-lite
         gemini-2.5-flash
         gemini-2.5-pro
+        rag_gemini-2.5.flash-lite
         claude-haiku-4-5
         claude-sonnet-4-6
         claude-opus-4-6
@@ -116,26 +111,21 @@ Each play-back is saved in a separate file in the application directory.
         qwen3.5:397b-cloud
         deepseek-chat
         deepseek-reasoner
-        rag_deepseek-r1:8b
-        rag_gemma4:e4b
-        rag_gemma4:e2b
 
 **Note:**  
     for **local** models obtained from Ollama append the model name with `-local`  
     for **cloud** models obtained from Ollama append the model name with `-cloud`  
-    Only Ollama local models are used with RAG. Prepend those with `rag-`  
-    Modify this file for what ever models you use.
+    the `rag-` prefix is used to mark the Gemini model used for **RAG** processing 
 
 ---
 
 ## RAG
 
-Workflow is slightly different for RAG. 
-
-1. select the rag-_model_ to use
-2. You are prompted to locate the directory containing your documents
-3. Wait while the documents are converted and built into the vector database
-4. prompt, get results, logging all the same as none RAG process.
+Only Google Gemini models are supported for RAG at this time.
+Enter the model you want for RAG and pre-pend `rag-` to the model name.
+When the 1st prompt is submitted, file will be uploaded and then processed.
+When "New" is used (new conversation) the RAG files and objects are removed
+from the cloud. Memory for RAG is not preserved across app sessions (except in the log).
 
 ---
 
