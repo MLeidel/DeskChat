@@ -1285,100 +1285,13 @@ Alt-P > Open Prompt Manager
             messagebox.showinfo("Log File",
                                 f"{self.MyPath} Removed.")
 
-    # toplevel window
+    # promptmgr.py
     def create_window(self, e=None):
-        ''' Opens a toplevel window providing selections of pre-written prompts '''
-        inx = 0  # index of list item
-        items = []
-        pdet = []
-        sdet = ''
-        filepath = "prompts/prompts.txt"
-
-        toplevel = Toplevel(self)
-        toplevel.title("DescAI Prompt Selector")
-
-        # Configure grid for the toplevel
-        toplevel.grid_columnconfigure(0, weight=1)
-        toplevel.grid_columnconfigure(1, weight=1)
-        toplevel.grid_columnconfigure(2, weight=1)
-        toplevel.grid_rowconfigure(1, weight=1)
-
-        def item_selected(e=None):
-            nonlocal inx, pdet
-            list_item = listbox.curselection()
-            item = listbox.get(list_item[0])
-            inx = list_item[0]  # save the index
-
-            txt.delete("1.0", END)
-            txt.insert(1.0, pdet[inx])  # the entire line
-
-            root.clipboard_clear()
-            root.clipboard_append(pdet[inx])  # the entire line
-
-        def pick(which):
-            nonlocal inx, pdet
-            if which == 1:
-                # replace query box with this prompt DETAIL
-                self.query.delete("1.0", END)  # clear the Text widget
-                self.query.insert(1.0, pdet[inx])  # fill the Text widget
-            else: # button 2
-                # append to query box Text
-                cmb = self.query.get(1.0, "end-1c")
-                cmb = cmb + pdet[inx]
-                self.query.delete("1.0", END)  # clear the Text widget
-                self.query.insert(1.0, cmb)  # fill the Text widget
-
-        def editor():
-            ''' Launch editor with prompts.txt file '''
-            subprocess.Popen([self.MyEditor, "prompts/prompts.txt"])
-
-        # Listbox (read-only, single selection)
-        listbox = Listbox(toplevel, height=8)
-        listbox.grid(row=0, column=0, columnspan=4, sticky="nsew", padx=5, pady=5)
-        listbox.bind("<<ListboxSelect>>", item_selected)
-
-        txt = Text(toplevel, padx=4, height=5)
-        txt.grid(row=1, column=0, columnspan=4, sticky='nsew', padx=5, pady=5)
-
-        # Read items from a text file (one item per line)
-
-        if os.path.exists(filepath):
-            try:
-
-                with open(filepath, "r", encoding="utf-8") as fin:
-                    for line in fin:
-                        if line.rstrip() == "%%%":
-                            if sdet != '':
-                                pdet.append(sdet)  # append previous DETAIL
-                                sdet = ''
-                            items.append(fin.readline().rstrip())  # append (next) new ITEMS line
-                        else:
-                            sdet += line
-                    pdet.append(sdet)  # append previous and LAST DETAIL
-
-            except Exception as e:
-                messagebox.showerror("Error", f"Failed to read {filepath}:\n{e}")
+        ''' executes the promptmgr program providing management for prompts '''
+        if platform.system() == "Windows":
+            subprocess.Popen(["python", "promptmgr.py"])
         else:
-            messagebox.showinfo("Info", f"Items file not found: {filepath}. No items loaded.")
-
-        for it in items:
-            listbox.insert(END, it)
-
-        # Buttons 1, 2 (capture selection) and 3 (close)
-        btn1 = Button(toplevel, text="Fill", command=lambda: pick(1))
-        btn2 = Button(toplevel, text="Append", command=lambda: pick(2))
-        btn3 = Button(toplevel, text="Edit", command=editor)
-        btn4 = Button(toplevel, text="Close", command=toplevel.destroy)
-
-        btn1.grid(row=2, column=0, padx=5, pady=5, sticky="ew")
-        btn2.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
-        btn3.grid(row=2, column=2, padx=5, pady=5, sticky="ew")
-        btn4.grid(row=2, column=3, padx=5, pady=5, sticky="ew")
-
-        toplevel.update_idletasks()
-        toplevel.geometry("400x350")
-        toplevel.minsize(300, 300)
-        toplevel.attributes("-topmost", True)  # Keep on top of other windows
+            subprocess.Popen(["python3","promptmgr.py"])
 
     def on_key_release(self, event=None):
         self.highlight()

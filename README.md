@@ -208,12 +208,10 @@ preserved anywhere, but will remain in the log until it is purged.
 |__Alt-P__|Open Prompt Manager (or right-click) |
 
 
-The `prompts` directory is for storing custom prompt text.
-Prompt files must begin with "prompt" and be followed by non-space characters, like `prompt1` or `promptX`.
-You can easily edit your prompt?.md files with a text editor.
+The `prompts` directory is for storing prompt manager json files.
 
-In addition, a _Prompts Viewer_ presents named prompts that are created and modified in a file
-called `prompts.txt`. Access the viewer with Alt-P or with the Right-Click drop-down.
+In addition, a _Prompts Manager_ can create, update, delete and edit prompts. 
+Access the viewer with Alt-P or with the Right-Click drop-down.
 
 ![alttext](images/promptsmgr.png "DescAI Prompts Viewer")
 

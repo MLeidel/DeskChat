@@ -1,0 +1,16 @@
+[
+    {
+        "name": "Test prompt 2",
+        "text": "This text is for testing.\nAsk if there are any questions.\nadded this to the prompt detail.",
+        "tags": [
+            "testing"
+        ]
+    },
+    {
+        "name": "Second prompt",
+        "text": "For testing.\nAI rewrote this program much better than I had it.\nAdded all the features I was intending to add.",
+        "tags": [
+            "testing"
+        ]
+    }
+]

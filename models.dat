@@ -13,6 +13,7 @@ gemini-2.5-pro
 gemini-2.5-flash
 gemini-2.5-flash-lite
 gemini-2.0-flash
+rag_gemini-2.5-flash
 rag_gemini-2.5-flash-lite
 claude-opus-4-6
 claude-sonnet-4-6
