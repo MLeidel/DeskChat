@@ -213,7 +213,6 @@ bkup_*
 *.html
 *.mp3
 winfo
-*.zip
 test
 conversation.json
 log.md
