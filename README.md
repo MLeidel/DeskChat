@@ -1,9 +1,8 @@
-# DescAI
+# DeskChat
 
 ### a GUI desktop AI client  
 >#### Converse with cloud and local based LLMs 
->##### Openai Google anthropic Ollama Groq Deepseek
-
+>##### Openai Google anthropic Ollama Groq Deepseek  
 
 -  Temporary local Chat Mode
 -  Supports a variety of OpenAI models and web-search
@@ -29,17 +28,17 @@ _requires modules_
 _Uses Python and tkinter_
 
 >python3  
->python3-tk
+>python3-tk  
 Ollama (see website to download)
 
 
 aditional requirements:
 
-        text editor
+        text editor (of your choice)
         
         VNC media player
         
-        Internet and Internet browser
+        Internet and Internet browser (of your choice)
 
 **Tested on Windows and Linux**
 
@@ -64,7 +63,7 @@ Here are the vendors, websites, and key labels to use in your environment:
 | groq | https://console.groq.com/keys | **GRQKEY** |
 | Deepseek | https://platform.deepseek.com | **DSKKEY** |
 
-Windows and Linux have their own way to set these variables.
+Windows and Linux have their own ways to set these variables.
 
 ### Local Models
 
@@ -137,7 +136,7 @@ There is a GUI that handles options but can use a text editor also.
 
 ---
 
-![DescAI](images/descai.png "GUI for DescAI")
+![DeskChat](images/deskchat.png "GUI for DeskChat")
 
 ## Buttons
 
@@ -181,7 +180,7 @@ Right-Click in the prompt or response area to get a bunch of useful choices.
 
 ### Setting options from the app
 
-![alttext](images/options.png "DescAI Options")
+![alttext](images/options.png "DeskChat Options")
 
 ## Operation
 
@@ -213,7 +212,7 @@ The `prompts` directory is for storing prompt manager json files.
 In addition, a _Prompts Manager_ can create, update, delete and edit prompts. 
 Access the viewer with Alt-P or with the Right-Click drop-down.
 
-![alttext](images/promptsmgr.png "DescAI Prompts Viewer")
+![alttext](images/promptsmgr.png "DeskChat Prompts Viewer")
 
 ----
 

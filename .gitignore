@@ -215,11 +215,10 @@ bkup_*
 winfo
 test
 conversation.json
-log.md
+log.*
 .clai_local
-temp.md
-cpreadme.sh
-cpmodels.sh
-cmpyall.sh
+temp.*
 test.py
 docs
+promet
+recent

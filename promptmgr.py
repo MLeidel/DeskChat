@@ -11,7 +11,7 @@ import os # Added for path handling
 import configparser
 from ttkbootstrap import *
 from ttkbootstrap.constants import *
-from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.widgets import ToolTip
 
 class PromptManagerApp(Tk):
     def __init__(self):

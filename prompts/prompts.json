@@ -23,5 +23,14 @@
             "prompt",
             "RAG"
         ]
+    },
+    {
+        "name": "DeskCMD",
+        "text": "Environment: Linux\n\nI want to build a DeskCMD.deb file for my applicatioin for convenient deployment and installations.\n\nThe application deskcmd is writen in C. It has one executable: deskcmd\nIt uses no files in the app root directory.\nIt does use files that get created in USER/.config\n\nAlso it would be nice to execute a bash script during the installation if possible.",
+        "tags": [
+            "howto",
+            "c",
+            "linux"
+        ]
     }
 ]

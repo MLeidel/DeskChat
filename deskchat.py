@@ -33,7 +33,7 @@ from tkinter import simpledialog
 from tkinter import filedialog
 from ttkbootstrap import *
 from ttkbootstrap.constants import *
-from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.widgets import ToolTip
 from openai import OpenAI
 from google.genai import types
 from ollama import Client
@@ -106,7 +106,7 @@ class Application(Frame):
         self.rowconfigure(2, weight=1, pad=5)
 
         # Create a vertical PanedWindow to hold both text widgets
-        self.paned = PanedWindow(self, orient=VERTICAL)
+        self.paned = Panedwindow(self, orient=VERTICAL)
         self.paned.grid(row=1, rowspan=2, column=1, columnspan=2, sticky='nsew')
 
         # --- Query frame (top pane) ---
@@ -1122,12 +1122,12 @@ Alt-P > Open Prompt Manager
 
     def do_pop_query(self, event):
         ''' handles right-click for context menu '''
-        popup = tk.Toplevel(root)
+        popup = Toplevel(root)
         popup.wm_overrideredirect(True)  # no window decorations
         popup.attributes("-topmost", True)
         popup.geometry("+%d+%d" % (event.x_root, event.y_root))
 
-        frame = tk.Frame(popup, bd=0)
+        frame = Frame(popup)
         frame.pack()
 
         items = [
@@ -1141,18 +1141,18 @@ Alt-P > Open Prompt Manager
 
 
         for text, cmd in items:
-            b = tk.Button(frame, text=text, anchor="w", command=lambda c=cmd: (popup.destroy(), c()))
+            b = Button(frame, text=text, command=lambda c=cmd: (popup.destroy(), c()))
             b.pack(fill="x", padx=8, pady=4)  # padding around each item
 
 
     def do_pop_txt(self, event):
         ''' handles right-click for txt menu '''
-        popup = tk.Toplevel(root)
+        popup = Toplevel(root)
         popup.wm_overrideredirect(True)  # no window decorations
         popup.attributes("-topmost", True)
         popup.geometry("+%d+%d" % (event.x_root, event.y_root))
 
-        frame = tk.Frame(popup, bd=0)
+        frame = Frame(popup)
         frame.pack()
 
         items = [
@@ -1167,7 +1167,7 @@ Alt-P > Open Prompt Manager
         ]
 
         for text, cmd in items:
-            b = tk.Button(frame, text=text, anchor="w", command=lambda c=cmd: (popup.destroy(), c()))
+            b = Button(frame, text=text, command=lambda c=cmd: (popup.destroy(), c()))
             b.pack(fill="x", padx=8, pady=4)  # padding around each item
 
     def popquery(self, n):
@@ -1219,10 +1219,10 @@ Alt-P > Open Prompt Manager
         if term:
             self.search_term = term
             # Remove any previous highlights.
-            self.txt.tag_remove("highlight", "1.0", tk.END)
+            self.txt.tag_remove("highlight", "1.0", END)
             # Start searching from the beginning.
             self.last_found_index = "1.0"
-            pos = self.txt.search(self.search_term, self.last_found_index, stopindex=tk.END)
+            pos = self.txt.search(self.search_term, self.last_found_index, stopindex=END)
             if pos:
                 # Highlight the found text.
                 end_pos = f"{pos}+{len(self.search_term)}c"
@@ -1241,10 +1241,10 @@ Alt-P > Open Prompt Manager
         if not self.search_term:
             return self.find_text()
 
-        pos = self.txt.search(self.search_term, self.last_found_index, stopindex=tk.END)
+        pos = self.txt.search(self.search_term, self.last_found_index, stopindex=END)
         if pos:
             # Remove previous highlights so only the current match is highlighted.
-            self.txt.tag_remove("highlight", "1.0", tk.END)
+            self.txt.tag_remove("highlight", "1.0", END)
             end_pos = f"{pos}+{len(self.search_term)}c"
             self.txt.tag_add("highlight", pos, end_pos)
             self.txt.see(pos)
@@ -1252,7 +1252,7 @@ Alt-P > Open Prompt Manager
             self.last_found_index = end_pos
         else:
             messagebox.showinfo("Result", "No more matches found.")
-            self.txt.tag_remove("highlight", "1.0", tk.END)
+            self.txt.tag_remove("highlight", "1.0", END)
         return "break"  # Prevent the default behavior.
 
 
