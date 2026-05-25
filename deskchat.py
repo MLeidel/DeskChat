@@ -42,7 +42,6 @@ from groq import Groq
 import anthropic
 import vocvlc
 from google import genai
-from google.genai import types
 
 
 apptitle = "deskchat 2.0 "
