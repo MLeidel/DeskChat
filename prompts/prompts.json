@@ -1,36 +1,11 @@
 [
     {
-        "name": "Gemini RAG",
-        "text": "**The 48-Hour Safety Net:** If you have simply \"lost track\" of the files, remember that **Google automatically purges them after 48 hours.** If you are not in a rush to free up space, simply waiting 2 days will perform the cleanup for you.",
+        "name": "pname",
+        "text": "prompt text",
         "tags": [
-            "info",
-            "RAG",
-            "Google"
-        ]
-    },
-    {
-        "name": "Rename DescAI",
-        "text": "NexusAI\nOmniChat\nDeskChat AI\nDeskSage",
-        "tags": [
-            "info",
-            "notes"
-        ]
-    },
-    {
-        "name": "OpenAI RAG",
-        "text": "Does OpenAI (gpt...) have an API to upload document(s) to use in a simple RAG operation?\n\nI've implemented Google's gemini File RAG which works nicely. I currently have working code for OpenAI's straight-language-only conversational API.",
-        "tags": [
-            "prompt",
-            "RAG"
-        ]
-    },
-    {
-        "name": "DeskCMD",
-        "text": "Environment: Linux\n\nI want to build a DeskCMD.deb file for my applicatioin for convenient deployment and installations.\n\nThe application deskcmd is writen in C. It has one executable: deskcmd\nIt uses no files in the app root directory.\nIt does use files that get created in USER/.config\n\nAlso it would be nice to execute a bash script during the installation if possible.",
-        "tags": [
-            "howto",
-            "c",
-            "linux"
+            "tag",
+            "tab",
+            "gab"
         ]
     }
 ]
