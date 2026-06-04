@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=DeskChat AI
+Comment=Desktop AI Chat
+Exec=./deskchat.pyc
+Icon=/home/$USER/where-ever.../DeskChat/images/AI.png
+Path=/home/$USER/where-ever.../DeskChat
+Terminal=false
+StartupNotify=true
