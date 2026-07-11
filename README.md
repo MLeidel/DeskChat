@@ -14,6 +14,8 @@
 -  Choose from many themes and colors
 -  Pop-up Prompt Manager and Options Manager
 -  RAG for .pdf .md .txt .csv .html documents
+-  Text to Speech
+-  Launch Image Maker from DeskChat
 
 _requires modules_  
 
@@ -134,6 +136,8 @@ The `options.ini` file contains all of the options settings.
 
 There is a GUI that handles options but can use a text editor also.  
 
+There are several settings in `options.ini` that can be set manually (with a text editor)
+
 ---
 
 ![DeskChat](images/deskchat.png "GUI for DeskChat")
@@ -204,6 +208,7 @@ preserved anywhere, but will remain in the log until it is purged.
 |__Ctrl-N__| Find next text |
 |__Ctrl-J__| Open Selected URL |
 |__Ctrl-R__|Clear Prompt Area|
+|__Ctrl-I__|Open Image Maker |
 |__Alt-P__|Open Prompt Manager (or right-click) |
 
 

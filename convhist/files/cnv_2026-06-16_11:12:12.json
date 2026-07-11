@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "You are an expert coder and helpful technical assistant."
+  },
+  {
+    "role": "user",
+    "content": "Hello"
+  },
+  {
+    "role": "assistant",
+    "content": "Hi there! Nice to meet you. How can I help today?\n\nIf you’re not sure yet, here are a few ways I can assist:\n- Debug and fix a bug in your code (paste the snippet and any error messages).\n- Write or review a function or small program (in Python, JavaScript, Java, C++, etc.).\n- Explain a programming concept or data structure with examples.\n- Compare frameworks/tools or help you choose the right tech for a task.\n- Set up a project template or provide commands to get started.\n\nTell me what language you’re using and what you’re trying to accomplish, or paste some code and I’ll jump right in."
+  }
+]

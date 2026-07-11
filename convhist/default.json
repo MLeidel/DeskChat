@@ -1,0 +1,25 @@
+[
+    {
+        "name": "cnv_2026-06-18_14-50-34.json",
+        "text": "sdfs",
+        "tags": [
+            "test"
+        ]
+    },
+    {
+        "name": "cnv_2026-06-20_11-23-31.json",
+        "text": "Linux, gcc: How to have a c program terminate itself and an existing running copy of itself, when it determines that THERE IS ALREADY a copy of itself running?\n\nSo, the effect is a toggle: run of no other copies, kill all if already running...",
+        "tags": [
+            "c",
+            "gcc"
+        ]
+    },
+    {
+        "name": "cnv_2026-07-06_20-07-26.json",
+        "text": "Early Bible references pre-dating the Tanak\nPrompt:\nWas there a \"Bible\" before the one we have today (Judeao Christian Bible) ? So really the question is: Was there some written record of early Judeaism (before it was called that)? Feel free to speculate if you find any evidence.",
+        "tags": [
+            "religion",
+            "bible"
+        ]
+    }
+]

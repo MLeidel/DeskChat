@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "You are an expert coder and helpful technical assistant."
+  },
+  {
+    "role": "user",
+    "content": "Is there a way, in Windows, using tkinter and the Text widget, to have a double-click select with boundaries like ()[],-... along with just space?"
+  },
+  {
+    "role": "assistant",
+    "content": "Yes. The easiest and most reliable way is to override the Text widget's double-click behavior with your own handler that finds the \"word\" boundaries you want and then sets the selection. Bind <Double-Button-1> to a callback, compute the token under the click (treating e.g. (), [], comma, hyphen, period and space as separators), add the \"sel\" tag, and return \"break\" so Tk's default double-click handling doesn't run.\n\nExample — this treats space, parentheses, brackets, comma, hyphen and dot as separators:\n\nimport tkinter as tk\nimport re\n\n# characters you want to treat as separators: ()[],-. and whitespace\nword_re = re.compile(r\"[^()\\[\\],\\.\\-\\s]+\")\n\ndef select_token(event):\n    # get index of click\n    idx = text.index(\"@%d,%d\" % (event.x, event.y))\n    line_no, col = map(int, idx.split('.'))\n    # get the full line\n    line = text.get(f\"{line_no}.0\", f\"{line_no}.end\")\n    # find the token that contains the clicked column\n    for m in word_re.finditer(line):\n        if m.start() <= col < m.end():\n            start = f\"{line_no}.{m.start()}\"\n            end   = f\"{line_no}.{m.end()}\"\n            text.tag_remove(\"sel\", \"1.0\", \"end\")\n            text.tag_add(\"sel\", start, end)\n            text.mark_set(\"insert\", end)\n            text.see(\"insert\")\n            break\n    else:\n        # optional: if click on a separator, select that single char\n        if 0 <= col < len(line):\n            start = f\"{line_no}.{col}\"\n            end   = f\"{line_no}.{col+1}\"\n            text.tag_remove(\"sel\", \"1.0\", \"end\")\n            text.tag_add(\"sel\", start, end)\n    return \"break\"   # stop default handler\n\nroot = tk.Tk()\ntext = tk.Text(root, wrap=\"none\")\ntext.pack(expand=1, fill=\"both\")\ntext.insert(\"end\", \"Example: word1(word2),word-3...end\")\ntext.bind(\"<Double-Button-1>\", select_token)\nroot.mainloop()\n\nNotes and variations\n- Adjust the regex pattern to change which characters are treated as separators. For example, include/exclude apostrophes, underscores, Unicode letters, etc.\n- If you want to preserve other default bindings (e.g. triple-click selection for a line) you can leave those alone — this only overrides the double-click.\n- Returning \"break\" prevents the default Tk selection. If you omit it you will fight with the default behavior.\n- This is cross-platform; no special Windows-only APIs are needed.\n\nIf you'd like, tell me the exact characters you want included/excluded (or whether hyphenated words should be treated as a single token), and I can give a tuned regex."
+  }
+]

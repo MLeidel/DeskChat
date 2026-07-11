@@ -5,5 +5,5 @@ google
 groq
 ollama
 protobuf
-ttkbootstrap==1.14.2
+ttkbootstrap
 Markdown

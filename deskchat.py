@@ -44,7 +44,7 @@ import vocvlc
 from google import genai
 
 
-apptitle = "deskchat 2.0 "
+apptitle = "deskchat 2.1 "
 
 class Application(Frame):
     ''' This tkinter GUI app provides a flexible dual vertical pane
@@ -85,6 +85,7 @@ class Application(Frame):
         self.MyMd2      = config['Main']['md2']
         self.MyMd3      = config['Main']['md3']
         self.TOPFRAME   = int(config['Main']['top_frame'])
+        self.MyVocMod   = config['Main']['vocmodel']
 
         with open("models.dat", 'r', encoding='utf-8') as f:
             self.MyModels = [line.strip() for line in f if line.strip()]
@@ -237,7 +238,7 @@ class Application(Frame):
         # Bindings
 
         root.bind("<Control-r>", lambda event: self.query.delete('1.0', 'end'))
-        root.bind("<Alt-p>", self.create_window)
+        root.bind("<Alt-p>", self.open_conversation_mgr)
         root.bind("<Control-h>", self.on_kb_help)  # show hotkey help
         root.bind("<Control-q>", self.exit_program)  # Close button
         root.bind("<Control-g>", self.on_submit)  # Submit Query button
@@ -247,6 +248,7 @@ class Application(Frame):
         root.bind("<Control-f>", self.find_text)
         root.bind("<Control-n>", self.find_next)
         root.bind("<Control-e>", self.on_md_open)
+        root.bind("<Control-i>", self.open_image_maker)
         root.bind("<Control-j>", self.open_selected_url)  # open selected URL in browser
         self.query.bind("<Button-3>", self.do_pop_query)
         self.txt.bind("<Button-3>", self.do_pop_txt)
@@ -277,11 +279,11 @@ class Application(Frame):
                 bootstyle=(INVERSE),
                 wraplength=140)
         ToolTip(self.md,
-                text="markdown to browser",
+                text="Contents to browser",
                 bootstyle=(INVERSE),
                 wraplength=140)
         ToolTip(self.open,
-                text="markdown to text editor",
+                text="Contents to text editor",
                 bootstyle=(INVERSE),
                 wraplength=140)
         ToolTip(self.web,
@@ -307,7 +309,7 @@ class Application(Frame):
         #
         self.conversation = self.load_buffer(self.cpath)
 
-        if self.conversation == []:
+        if self.conversation == []:  # the conversation.json file was not found
             if not self.MyModel.startswith("claude"):
                 # and not self.MyModel.startswith("gemini":
                 self.conversation = [
@@ -315,6 +317,8 @@ class Application(Frame):
                 ]
             if os.path.isfile(self.cpath):
                 os.remove(self.cpath)
+            if os.path.isfile("restored"):
+                os.remove("restored")
         else:
             self.on_new()
 
@@ -343,9 +347,8 @@ class Application(Frame):
 
         Use Ctrl-H for list of keyboard commands
 
-        Registered API keys are required to be set
-        as system environment variables.
-        See https://github.com/MLeidel/deskchat for details.
+        Registered API keys are required to be set in your environment.
+        Try these URLs to obtain API keys:
 
         https://auth.openai.com/log-in
         https://platform.claude.com/dashboard
@@ -779,6 +782,24 @@ class Application(Frame):
 
         query = self.query.get("1.0", END).strip()
 
+        # see if Conversations Manager has restored a saved Conversations
+        # concept: if "restored" exists then a new "conversation.json" exists
+        if os.path.exists("./restored"):
+            result = messagebox.askyesno("Conversations",
+                                        "You are resuming a saved conversation. Do you want to proceed?")
+            if result:
+                os.remove("./restored")  # delete the restored marker left by convmgr.py
+                # reload conversation.json
+                self.conversation = self.load_buffer(self.cpath)
+                # and continue ...
+            else:
+                result = messagebox.askyesno("Conversations",
+                                        "Continue with this prompt to start new conversation?")
+                if result:
+                    self.new_conversation()
+                else:
+                    return
+
         # show prompt.md document
         if query.startswith("prompt"):
             fword = query.split()
@@ -893,6 +914,8 @@ class Application(Frame):
             ]
         if os.path.isfile(self.cpath):
             os.remove(self.cpath)
+        if os.path.isfile("restored"):
+            os.remove("restored")
             # messagebox.showinfo("Note", "The text of the previous conversation will remain in the log.")
         self.query.delete("1.0", END)
         self.display_intro()
@@ -905,9 +928,9 @@ class Application(Frame):
         area preceeded by the word `prompt` '''
         root.withdraw()
         result = messagebox.askyesno("Conversations",
-                                        "Start a new conversation?")
+                                        "Continue previous conversation?")
         root.deiconify()
-        if result is True:
+        if result is not True:
             # start new conversation
             self.new_conversation()
         self.query.focus_set()
@@ -958,6 +981,12 @@ class Application(Frame):
         self.after(400, self.highlight)
 
 
+    def open_image_maker(self, event=None):
+        ''' Ctrl-i opens Aimgui image maker '''
+        if platform.system() == "Windows":
+            subprocess.Popen(["pythonw.exe", "Aimgui/aimgui.py"])
+        else:
+            subprocess.Popen(["python3", "Aimgui/aimgui.py"])
 
     def reLaunch(self):
         ''' close and re-open this instance '''
@@ -1024,7 +1053,7 @@ class Application(Frame):
 
 
     def on_md_open(self, e=None):
-        ''' open txt (MD) in your text editor '''
+        ''' open contents in your text editor '''
         text = self.getmdtext()
         filename = os.getcwd() + '/' + self.MyFile
         with open(filename, 'w') as f:
@@ -1034,7 +1063,7 @@ class Application(Frame):
         # os.system(self.MyEditor + " " + filename)
 
     def on_md_render(self, e=None):
-        ''' render txt (MD) to html and show window '''
+        ''' render contents to html and show window '''
         text = self.getmdtext()
         # convert MD to HTML
         H = markdown.markdown(text,
@@ -1056,7 +1085,7 @@ class Application(Frame):
         text = self.getmdtext()  # get selected or all text
         filename = self.get_unique_filename()
         filename = "speech/" + filename
-        x = vocvlc.textospeech(self.MyKey, self.MyVoice, 'normal', filename, text)
+        x = vocvlc.textospeech(self.MyVocMod, self.MyKey, self.MyVoice, 'normal', filename, text)
         if x != 0:
             messagebox.showerror("vocvlc Error", "There is a problem with the voice file")
         else:
@@ -1102,7 +1131,8 @@ Ctrl-J > Open Selected URL
 Ctrl-Q > Exit Program no ask
 Ctrl-R > Clear prompt area
 Ctrl-E > Open in Text Editor
-Alt-P > Open Prompt Manager
+Ctrl-I > Open Image Maker
+Alt-P > Open Conversation Mgr
         '''
         messagebox.showinfo("Hot Keys Help", msg)
 
@@ -1133,7 +1163,7 @@ Alt-P > Open Prompt Manager
             ("Copy", lambda: (popup.destroy(), self.popquery(1))),
             ("Paste", lambda: (popup.destroy(), self.popquery(2))),
             ("Copy All", lambda: (popup.destroy(), self.popquery(3))),
-            ("Prompt Mgr", lambda: (popup.destroy(), self.popquery(4))),
+            ("Conv Mgr", lambda: (popup.destroy(), self.popquery(4))),
             ("Clear", lambda: (popup.destroy(), self.popquery(5))),
             ("Close", lambda: (popup.destroy())),
         ]
@@ -1185,7 +1215,7 @@ Alt-P > Open Prompt Manager
         elif n == 3:  # Copy All
             self.copy_all(self.query)
         elif n == 4:  # Prompt Manager
-            self.create_window(None)
+            self.open_conversation_mgr(None)
         elif n == 5:  # clear prompt text area
             self.query.delete('1.0', 'end')
 
@@ -1284,13 +1314,13 @@ Alt-P > Open Prompt Manager
             messagebox.showinfo("Log File",
                                 f"{self.MyPath} Removed.")
 
-    # promptmgr.py
-    def create_window(self, e=None):
-        ''' executes the promptmgr program providing management for prompts '''
+    # convmgr.py
+    def open_conversation_mgr(self, e=None):
+        ''' executes the convmgr program providing management for conversations '''
         if platform.system() == "Windows":
-            subprocess.Popen(["python", "promptmgr.py"])
+            subprocess.Popen(["python", "convmgr.py"])
         else:
-            subprocess.Popen(["python3","promptmgr.py"])
+            subprocess.Popen(["python3","convmgr.py"])
 
     def on_key_release(self, event=None):
         self.highlight()

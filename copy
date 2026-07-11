@@ -1,0 +1,14 @@
+#!/bin/env bash
+
+# refresh the installation files with new deskchat.py and README.html
+
+echo "";echo "";echo ""
+cp -vf deskchat.py ../installations/code/DeskChat/deskchat.py
+cp -vf README.html ../installations/code/DeskChat/README.html
+cd ../installations/code
+zip -r deskchat_install.zip Aimgui
+touch deskchat_install.zip
+cd ..
+./install_deskchat.sh
+echo "============= D O N E =============="
+

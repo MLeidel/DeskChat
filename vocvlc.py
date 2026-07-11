@@ -36,9 +36,10 @@ def play_file(speech_file_path):
             subprocess.Popen(['vlc', '--play-and-exit', speech_file_path])
 
 
-def textospeech(key, voc, ins, fou, inp):
+def textospeech(mod, key, voc, ins, fou, inp):
     ''' create the audio file
         get parameters from GUI
+        mod = OpenAI text to speech model
         key = OpenAI gpt key variable
         voc = voice name
         ins = instructions on how to speak
@@ -57,7 +58,7 @@ def textospeech(key, voc, ins, fou, inp):
 
     try:
         with openai.audio.speech.with_streaming_response.create(
-          model="gpt-4o-mini-tts",
+          model=mod,
           voice=voc,
           response_format="mp3",
           instructions=ins,
