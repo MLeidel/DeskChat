@@ -12,10 +12,12 @@
 -  Simple GUI
 -  Renders HTML from Markdown
 -  Choose from many themes and colors
--  Pop-up Prompt Manager and Options Manager
 -  RAG for .pdf .md .txt .csv .html documents
 -  Text to Speech
 -  Launch Image Maker from DeskChat
+-  Conversations Manager
+-  Options Manager
+
 
 _requires modules_  
 
@@ -209,15 +211,15 @@ preserved anywhere, but will remain in the log until it is purged.
 |__Ctrl-J__| Open Selected URL |
 |__Ctrl-R__|Clear Prompt Area|
 |__Ctrl-I__|Open Image Maker |
-|__Alt-P__|Open Prompt Manager (or right-click) |
+|__Alt-P__|Open Conversations Manager (or right-click) |
 
 
-The `prompts` directory is for storing prompt manager json files.
+The `convhist` directory is where conversations manager stores the conversation json files.
 
-In addition, a _Prompts Manager_ can create, update, delete and edit prompts. 
-Access the viewer with Alt-P or with the Right-Click drop-down.
+The _Conversations Manager_ can save, create, update, delete and edit conversations. 
+Access Alt-P or with the Right-Click menu.
 
-![alttext](images/promptsmgr.png "DeskChat Prompts Viewer")
+![alttext](images/convmgr.png "DeskChat Prompts Viewer")
 
 ----
 
