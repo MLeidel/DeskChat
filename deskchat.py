@@ -237,21 +237,39 @@ class Application(Frame):
 
         # Bindings
 
-        root.bind("<Control-r>", lambda event: self.query.delete('1.0', 'end'))
-        root.bind("<Alt-p>", self.open_conversation_mgr)
-        root.bind("<Control-h>", self.on_kb_help)  # show hotkey help
-        root.bind("<Control-q>", self.exit_program)  # Close button
-        root.bind("<Control-g>", self.on_submit)  # Submit Query button
-        root.bind("<Control-Return>", self.on_submit)  # Submit Query button
-        root.bind("<Control-Shift-S>", self.speak_text)  # speak query response
-        root.bind("<Control-Shift-D>", self.delete_log)
-        root.bind("<Control-f>", self.find_text)
-        root.bind("<Control-n>", self.find_next)
-        root.bind("<Control-e>", self.on_md_open)
-        root.bind("<Control-i>", self.open_image_maker)
-        root.bind("<Control-j>", self.open_selected_url)  # open selected URL in browser
+        if platform.system() != "Darwin":
+            root.bind("<Control-r>", lambda event: self.query.delete('1.0', 'end'))
+            root.bind("<Alt-p>", self.open_conversation_mgr)
+            root.bind("<Control-h>", self.on_kb_help)  # show hotkey help
+            root.bind("<Control-q>", self.exit_program)  # Close button
+            root.bind("<Control-g>", self.on_submit)  # Submit Query button
+            root.bind("<Control-Return>", self.on_submit)  # Submit Query button
+            root.bind("<Control-Shift-S>", self.speak_text)  # speak query response
+            root.bind("<Control-Shift-D>", self.delete_log)
+            root.bind("<Control-f>", self.find_text)
+            root.bind("<Control-n>", self.find_next)
+            root.bind("<Control-e>", self.on_md_open)
+            root.bind("<Control-i>", self.open_image_maker)
+            root.bind("<Control-j>", self.open_selected_url)  # open selected URL in browser
+        else:
+            root.bind("<Command-r>", lambda event: self.query.delete('1.0', 'end'))
+            root.bind("<Command-Shift-P>", self.open_conversation_mgr)
+            root.bind("<Command-h>", self.on_kb_help)  # show hotkey help
+            root.bind("<Command-q>", self.exit_program)  # Close button
+            root.bind("<Command-g>", self.on_submit)  # Submit Query button
+            root.bind("<Command-Return>", self.on_submit)  # Submit Query button
+            root.bind("<Command-Shift-S>", self.speak_text)  # speak query response
+            root.bind("<Command-Shift-D>", self.delete_log)
+            root.bind("<Command-f>", self.find_text)
+            root.bind("<Command-n>", self.find_next)
+            root.bind("<Command-e>", self.on_md_open)
+            root.bind("<Command-i>", self.open_image_maker)
+            root.bind("<Command-j>", self.open_selected_url)  # open selected URL in browser
+
         self.query.bind("<Button-3>", self.do_pop_query)
         self.txt.bind("<Button-3>", self.do_pop_txt)
+
+
         # Bind events for real-time highlighting
         self.txt.bind("<KeyRelease>", self.on_key_release)
         self.txt.bind("<Button-1>", self.on_click)
@@ -819,7 +837,7 @@ class Application(Frame):
             {"role": "user", "content": query}
         )
 
-        # call the set chat completion API
+        # call the correct API based on model name
 
         if self.MyModel.endswith("-local"):
             ai_text = self.api_ollama_local()
@@ -987,6 +1005,8 @@ class Application(Frame):
             subprocess.Popen(["pythonw.exe", "Aimgui/aimgui.py"])
         else:
             subprocess.Popen(["python3", "Aimgui/aimgui.py"])
+        return "break"
+
 
     def reLaunch(self):
         ''' close and re-open this instance '''
@@ -1061,6 +1081,7 @@ class Application(Frame):
         # print(self.MyEditor, filename)
         subprocess.Popen([self.MyEditor, filename])
         # os.system(self.MyEditor + " " + filename)
+        return "break"
 
     def on_md_render(self, e=None):
         ''' render contents to html and show window '''
@@ -1119,7 +1140,8 @@ class Application(Frame):
 
     def on_kb_help(self, e=None):
         ''' display hot keys message '''
-        msg = '''
+        if platform.system() != "Darwin":
+            msg = '''
 Ctrl-Shift-D > Delete Log
 Ctrl-Shift-S > Speak the Text
 Ctrl-Return > Submit Query
@@ -1133,8 +1155,26 @@ Ctrl-R > Clear prompt area
 Ctrl-E > Open in Text Editor
 Ctrl-I > Open Image Maker
 Alt-P > Open Conversation Mgr
-        '''
+'''
+        else:
+            msg = '''
+Command-Shift-D > Delete Log
+Command-Shift-S > Speak the Text
+Command-Return > Submit Query
+Command-G > Submit Query
+Command-H > HotKeys help
+Command-F > Find Text
+Command-N > Find Next Text
+Command-J > Open Selected URL
+Command-Q > Exit Program no ask
+Command-R > Clear prompt area
+Command-E > Open in Text Editor
+Command-I > Open Image Maker
+Command-Shift-P > Open Conversation Mgr
+'''
+
         messagebox.showinfo("Hot Keys Help", msg)
+
 
     def copy_all(self, panel):
         ''' helper function '''
@@ -1321,12 +1361,16 @@ Alt-P > Open Conversation Mgr
             subprocess.Popen(["python", "convmgr.py"])
         else:
             subprocess.Popen(["python3","convmgr.py"])
+        return "break"
+
 
     def on_key_release(self, event=None):
         self.highlight()
 
+
     def on_click(self, event=None):
         self.after(10, self.highlight)  # Small delay to ensure cursor position updates
+
 
     def highlight(self):
         # Remove existing tags ///

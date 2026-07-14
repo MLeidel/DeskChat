@@ -212,6 +212,9 @@ preserved anywhere, but will remain in the log until it is purged.
 |__Ctrl-R__|Clear Prompt Area|
 |__Ctrl-I__|Open Image Maker |
 |__Alt-P__|Open Conversations Manager (or right-click) |
+|__Command-Shift-P__|Open Conversations Manager MacOS |
+
+Use "Command" key instead of Ctrl key for MacOS
 
 
 The `convhist` directory is where conversations manager stores the conversation json files.

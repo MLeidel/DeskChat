@@ -23,11 +23,11 @@ echo __________________________________
 echo Begin installing needed packages
 echo ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-sudo apt install python3-pip python3-tk
-sudo apt install -y libffi-dev
-sudo apt install -y libjpeg-dev zlib1g-dev
-sudo apt install -y build-essential python3-dev
-sudo apt install -y python3-pil.imagetk
+# sudo apt install python3-pip python3-tk
+# sudo apt install -y libffi-dev
+# sudo apt install -y libjpeg-dev zlib1g-dev
+# sudo apt install -y build-essential python3-dev
+# sudo apt install -y python3-pil.imagetk
 
 pip3 install -r requirements.txt --break-system-packages
 

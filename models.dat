@@ -23,3 +23,4 @@ deepseek-chat
 deepseek-reasoner
 gemma4:e2b-local
 gemma4:e4b-local
+medgemma:latest-local
