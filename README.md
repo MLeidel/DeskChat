@@ -12,7 +12,7 @@
 -  Simple GUI
 -  Renders HTML from Markdown
 -  Choose from many themes and colors
--  RAG for .pdf .md .txt .csv .html documents
+-  RAG for .pdf .md .txt documents
 -  Text to Speech
 -  Launch Image Maker from DeskChat
 -  Conversations Manager

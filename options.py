@@ -7,7 +7,7 @@ import subprocess
 from tkinter.font import Font
 from ttkbootstrap import *
 from ttkbootstrap.constants import *
-from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.widgets import ToolTip
 from ttkbootstrap.dialogs import Querybox
 from tkinter import filedialog
 from tkinter import messagebox

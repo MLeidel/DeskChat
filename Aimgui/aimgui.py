@@ -31,6 +31,9 @@ class Application(Frame):
         self.MyFMgr = config['Main']['filemgr']
         self.MyPath = config['Main']['imgpath']
 
+        if len(sys.argv) > 1:   # when executed as part of a package with a theme
+            self.MyTheme = sys.argv[1]
+
         # establish path for image files
         if self.MyPath != ".":
             self.images_path = self.MyPath

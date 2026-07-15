@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+# MacOS - #!/opt/homebrew/bin/python3
 '''
 deskchat.py
 Linux and Windows ONLY
@@ -23,6 +24,7 @@ import platform
 import json
 import markdown
 import re
+import pdfplumber
 from time import localtime, strftime
 from tkinter import TclError
 from tkinter import Listbox
@@ -174,15 +176,15 @@ class Application(Frame):
         self.md.grid(row=1, column=7, sticky='w',
                      pady=(5, 0), padx=(0, 5))
 
-        self.opts = Button(btn_frame, text='Options',
-                            command=self.options,
-                            bootstyle=self.MyButtons)
-        self.opts.grid(row=1, column=8, sticky='w',
-                   pady=(5, 0), padx=5)
+        # self.opts = Button(btn_frame, text='Options',
+        #                     command=self.options,
+        #                     bootstyle=self.MyButtons)
+        # self.opts.grid(row=1, column=8, sticky='w',
+        #           pady=(5, 0), padx=5)
 
         self.sub = Button(btn_frame,
                             text='Submit Query',
-                            command=self.on_submit, width=15,
+                            command=self.on_submit, width=16,
                             bootstyle=self.MyButtons)
         self.sub.grid(row=1, column=9, sticky='w',
                    pady=(5, 0), padx=(5,5))
@@ -193,18 +195,18 @@ class Application(Frame):
         self.web.grid(row=1, column=10, sticky='w', pady=(5, 0), padx=(5, 5))
 
         self.vcmbo_model = StringVar()
-        self.cmbo_model = Combobox(btn_frame, textvariable=self.vcmbo_model, width=20, state="readonly")
+        self.cmbo_model = Combobox(btn_frame, textvariable=self.vcmbo_model, width=25, state="readonly")
         self.cmbo_model['values'] = self.MyModels
         self.cmbo_model.grid(row=1, column=11, sticky='w', pady=(5, 0), padx=(5, 5))
         self.cmbo_model.bind('<<ComboboxSelected>>', self.onComboSelect)
 
        # END BUTTON FRAME
 
-        cls = Button(self, text='Close',
-                    command=self.exit_program,
-                    bootstyle=self.MyButtons)
-        cls.grid(row=4, column=2, columnspan=2, sticky='e',
-                 pady=(5,0), padx=5)
+        # cls = Button(self, text='Close',
+        #             command=self.exit_program,
+        #             bootstyle=self.MyButtons)
+        # cls.grid(row=4, column=2, columnspan=2, sticky='e',
+        #          pady=(5,0), padx=5)
 
         # Popup menus - for self.query Text widgets
         self.popup_query = Menu(root, tearoff=0)
@@ -233,6 +235,25 @@ class Application(Frame):
         self.popup_txt.add_separator()
         self.popup_txt.add_command(label="Copy All",
                                      command=lambda: self.poptxt(3))
+
+        # "File" Menu
+
+        self.menu_bar = Menu(root)
+        root.config(menu=self.menu_bar)
+
+        self.file_menu = Menu(self.menu_bar, tearoff=0)
+        self.file_menu.add_command(label="Conversation Manager", command=self.open_conversation_mgr)
+        self.file_menu.add_command(label="Image Generator", command=self.open_image_maker)
+        self.file_menu.add_command(label="Input File Contents", command=self.input_xfile)
+        self.file_menu.add_command(label="Prompts Manager", command=self.open_prompts_mgr)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Speak Response", command=self.speak_text)
+        self.file_menu.add_command(label="Open Selected URL", accelerator="Ctrl+J", command=self.open_selected_url)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Options", command=self.options)
+        self.file_menu.add_command(label="Exit", accelerator="Ctrl+Q", command=self.exit_program)
+
+        self.menu_bar.add_cascade(label="Tools", menu=self.file_menu)
 
 
         # Bindings
@@ -341,6 +362,56 @@ class Application(Frame):
             self.on_new()
 
 #----------------------------------------------------------------------
+
+    def pdf_to_text_pdfplumber(self, pdf_path):
+        ''' Convert PDF to plain text using pdfplumber '''
+        text = ""
+
+        with pdfplumber.open(pdf_path) as pdf:
+            for page in pdf.pages:
+                text += page.extract_text()
+
+        return text
+
+
+    def input_xfile(self, e=None):
+        ''' Open an existing file.
+            Must be txt, md, or pdf
+            File contents will be inserted into
+            the query window at cursor position '''
+        filename = None
+        if platform.system() == "Windows":
+            current_dir = Path("c:\\")
+        else:
+            current_dir = Path(".")
+
+        print(current_dir)
+
+        filename = filedialog.askopenfilename(initialdir=current_dir,
+                                                   title="Select File",
+                                                   filetypes=(("All files", "*"),
+                                                             ("Text files", "*.txt"),
+                                                             ("PDF files", "*.pdf"),
+                                                             ("Markdown", "*.md")))
+        if filename == ():
+            return
+
+        # Load file (plain text) into prompt Window
+        try:
+            if filename.lower().endswith(".pdf"):
+                content = self.pdf_to_text_pdfplumber(filename)
+            else:
+                with open(filename, "r", encoding="utf-8") as fin:
+                    content = fin.read()
+        except Exception as e:
+            messagebox.showerror("Input File Error", str(e))
+            return
+        # insert into query window
+        cursor_pos = self.query.index(INSERT)
+        self.query.insert(cursor_pos, content)
+        tkns = self.get_aprox_tokens(content)
+        messagebox.showinfo("Aprox Tokens from file", " " * 64 + "\n" + str(tkns))
+
 
     def set_intro(self):
         ''' A "start" screen providing helpful information
@@ -1002,9 +1073,9 @@ class Application(Frame):
     def open_image_maker(self, event=None):
         ''' Ctrl-i opens Aimgui image maker '''
         if platform.system() == "Windows":
-            subprocess.Popen(["pythonw.exe", "Aimgui/aimgui.py"])
+            subprocess.Popen(["pythonw.exe", "Aimgui/aimgui.py", self.MyTheme])
         else:
-            subprocess.Popen(["python3", "Aimgui/aimgui.py"])
+            subprocess.Popen(["python3", "Aimgui/aimgui.py", self.MyTheme])
         return "break"
 
 
@@ -1364,15 +1435,26 @@ Command-Shift-P > Open Conversation Mgr
         return "break"
 
 
+    def open_prompts_mgr(self, e=None):
+        ''' executes the promptsmgr program for managing prompts '''
+        if platform.system() == "Windows":
+            subprocess.Popen(["python", "promptmgr.py"])
+        else:
+            subprocess.Popen(["python3","promptmgr.py"])
+
+
     def on_key_release(self, event=None):
+        ''' for highlighting '''
         self.highlight()
 
 
     def on_click(self, event=None):
+        ''' for highlighting '''
         self.after(10, self.highlight)  # Small delay to ensure cursor position updates
 
 
     def highlight(self):
+        ''' for highlighting '''
         # Remove existing tags ///
         for tag in ["headings", "bold", "italic", "hrule", "code"]:
             self.txt.tag_remove(tag, "1.0", "end")
@@ -1551,7 +1633,7 @@ else:
     root.geometry("675x505") # WxH+left+top
 
 root.protocol("WM_DELETE_WINDOW", save_location)  # TO SAVE GEOMETRY INFO
-root.minsize(790, 325)  # width, height
+root.minsize(715, 325)  # width, height
 Sizegrip(root).place(rely=1.0, relx=1.0, x=0, y=0, anchor='se')
 
 Application(root)
