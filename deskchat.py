@@ -248,6 +248,7 @@ class Application(Frame):
         self.file_menu.add_command(label="Prompts Manager", command=self.open_prompts_mgr)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Speak Response", command=self.speak_text)
+        self.file_menu.add_command(label="Change Sys Message", command=self.change_sys_msg)
         self.file_menu.add_command(label="Open Selected URL", accelerator="Ctrl+J", command=self.open_selected_url)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Options", command=self.options)
@@ -455,14 +456,14 @@ class Application(Frame):
         self.txt.insert("1.0", self.set_intro())
 
 
-    def show_prompts(self, fword: str):
-        ''' Open and display the prompt text file. '''
-        self.query.delete("1.0", END)
-        prmt = f"prompts/{fword}.md"
-        try:
-            self.query.insert("1.0", open(prmt).read())
-        except Exception as e:
-            messagebox.showerror("Prompt File", f"{prmt} not found.")
+    # def show_prompts(self, fword: str):
+    #     ''' Open and display the prompt text file. '''
+    #     self.query.delete("1.0", END)
+    #     prmt = f"prompts/{fword}.md"
+    #     try:
+    #         self.query.insert("1.0", open(prmt).read())
+    #     except Exception as e:
+    #         messagebox.showerror("Prompt File", f"{prmt} not found.")
 
 
     '''         API FUNCTIONS START HERE
@@ -801,63 +802,6 @@ class Application(Frame):
 
         return ai_text
 
-    '''
-        ▄▖     ▘  ▘  ▄▖▄▖▄▖
-        ▌ █▌▛▛▌▌▛▌▌  ▙▘▌▌▌
-        ▙▌▙▖▌▌▌▌▌▌▌  ▌▌▛▌▙▌
-
-    '''
-
-    def rag_gemini_api(self, query):
-        '''  '''
-
-        if self.vw.get() == 1:
-            messagebox.showwarning("Web Search","Web Search is not available with RAG.")
-            self.query.delete("1.0", END)
-            self.display_intro()
-            return ""
-
-        if query == "" or query == None:
-            ai_text = ""
-            return # abort
-
-
-        if self.rag_initiated is False:
-            paths = filedialog.askopenfilenames(
-                title="Select files",
-                initialdir=os.getcwd(),
-                filetypes=[("Text files","*.txt"),
-                           ("PDF files","*.pdf"),
-                           ("MD files","*.md"),
-                           ("CSV files","*.csv"),
-                           ("HTML files","*.html"),
-                           ("All files","*.*")
-                ]
-            )  # returns a tuple3
-            if paths == ():
-                messagebox.showerror("No files selected")
-                return ""
-
-            self.Gs = GeminiSession(self.MyModel[4:].strip())
-
-            # message to user
-            self.txt.delete("1.0", END)
-            self.txt.insert("1.0", "Uploading files for RAG..." )
-            self.txt.update_idletasks()
-
-            self.Gs.start_session(paths)
-            self.rag_initiated = True
-
-        # process prompts ... only after 1 'rag_initiated'
-        # message to user
-        self.txt.delete("1.0", END)
-        self.txt.insert("1.0", "Thinking ..." )
-        self.txt.update_idletasks()
-
-        ai_text = self.Gs.ask(query)
-
-        return ai_text
-
 
     ################# -----------------------------------------------
     ### ON SUBMIT ### -----------------------------------------------
@@ -865,7 +809,7 @@ class Application(Frame):
 
     def on_submit(self, event=None):
         ''' Event handler for Submit button (Ctrl-G).
-            Handles all the APIs '''
+            Ctrl-Enter. Handles all the APIs '''
 
         self.copy_all(self.query)  # as backup measure for prompt text
 
@@ -888,12 +832,6 @@ class Application(Frame):
                     self.new_conversation()
                 else:
                     return
-
-        # show prompt.md document
-        if query.startswith("prompt"):
-            fword = query.split()
-            self.show_prompts(fword[0])
-            return
 
         # begin submiting request
         self.txt.delete("1.0", END)
@@ -922,8 +860,6 @@ class Application(Frame):
             ai_text = self.api_claude_opus()
         elif self.MyModel.startswith("gemini"):
             ai_text = self.api_gemini()
-        elif self.MyModel.startswith("rag_gemini"):
-            ai_text = self.rag_gemini_api(query)
         elif self.MyModel.endswith("cloud"):
             ai_text = self.api_ollama_cloud()
         elif self.MyModel.startswith("groq"):
@@ -973,6 +909,19 @@ class Application(Frame):
         self.query.focus_set()
 
 #----------------------------------------------------------------------
+
+
+    def change_sys_msg(self):
+        ''' Temporarily change the system message '''
+        term = simpledialog.askstring("System Message", "Enter new system message")
+        if term:
+            self.MySystem = term
+            self.display_intro()
+            messagebox.showinfo("System Message", "Was changed (temporarily)")
+            # # select the input query box
+            # self.query.tag_add("sel", "1.0", "end-1c")
+            # self.query.focus_set()
+
 
     def get_aprox_tokens(self, text) -> int:
         ''' Calculates aproximate/average tokens from text '''
@@ -1519,84 +1468,6 @@ Command-Shift-P > Open Conversation Mgr
                                       'Confirm Exit app?') is False:
                 return
         save_location()
-
-#------------------------------------------------------------
-class GeminiSession:
-    ''' This class is used for the Gemini Rag requests '''
-    def __init__(self, model_id="gemini-2.5-flash-lite"):
-        self.model_id = model_id
-        self.chat = None
-        self.client = genai.Client(api_key=os.environ.get("GGLKEY"))
-        self.uploaded_files = []
-
-    def start_session(self, file_paths, initial_prompt="I am providing file(s) for context."):
-        '''  '''
-        print(file_paths)
-        for path in file_paths:
-            print(f"Uploading {os.path.basename(path)}...")
-            myfile = self.client.files.upload(file=path)
-            while myfile.state.name == "PROCESSING":
-                time.sleep(2)
-                myfile = self.client.files.get(name=myfile.name)
-
-            self.uploaded_files.append(myfile)
-
-        # default mime types supported
-        # PDF: application/pdf
-        # Plain Text: text/plain
-        # Comma-Separated Values: text/csv
-        # Markdown: text/markdown (Note: Often handled as text/plain)
-
-        # HTML: text/html
-        # Initialize Chat with file in history
-        file_parts = [
-            types.Part.from_uri(
-                file_uri=f.uri,
-                mime_type = f.mime_type,
-            ) for f in self.uploaded_files
-        ]
-
-        all_parts = file_parts + [types.Part.from_text(text=initial_prompt)]
-
-        # Initialize the chat
-        self.chat = self.client.chats.create(
-            model=self.model_id,
-            history=[
-                types.Content(
-                    role="user",
-                    parts=all_parts
-                )
-            ]
-        )
-
-    def ask(self, message):
-        ''' 1st and following prompts use this method '''
-        if not message:
-            return "Error: The prompt or file content is empty."
-        # for testing ...
-        if self.chat:
-            response = self.chat.send_message(message)
-            return response.text
-
-        return "No active session."
-
-
-    # def cleanup(self):
-    #     if self.active_file:
-    #         self.client.files.delete(name=self.active_file.name)
-
-    def cleanup(self):
-        # Check if the list exists and has contents
-        if hasattr(self, 'uploaded_files') and self.uploaded_files:
-            for file_obj in self.uploaded_files:
-                try:
-                    print(f"Deleting {file_obj.name}...")
-                    self.client.files.delete(name=file_obj.name)
-                except Exception as e:
-                    print(f"Failed to delete {file_obj.name}: {e}")
-
-            # Clear the list after deletion to avoid double-deletion attempts
-            self.uploaded_files = []
 
 #-----------------------------------------------------------
 

@@ -16,6 +16,7 @@
 -  Text to Speech
 -  Launch Image Maker from DeskChat
 -  Conversations Manager
+-  Prompts Manager
 -  Options Manager
 
 
@@ -124,19 +125,28 @@ Each play-back is saved in a separate file in the application directory.
 
 ## RAG
 
-Only Google Gemini models are supported for RAG at this time.
-Enter the model you want for RAG and pre-pend `rag-` to the model name.
-When the 1st prompt is submitted, file will be uploaded and then processed.
-When "New" is used (new conversation) the RAG files and objects are removed
-from the cloud. Memory for RAG is not preserved across app sessions (except in the log).
+RAG is handled with extended _context_ in the user prompt area.  
+**File Input** is provided in the tools menu.  
+Allowed formats are **txt**, **pdf**, and **markdown** file.
+Context limits have increased significantly making this approach reasonable.
+
+Generaly, you want to have your prompt segmented into:  
+
+-        System message
+-        Context or document / Prompt
+-        Prompt / Context or document
+
+Also, you can now temporarily change the system prompt from the tools menu.
 
 ---
 
 ## Options
 
+Access options from the tools menu.
+
 The `options.ini` file contains all of the options settings.
 
-There is a GUI that handles options but can use a text editor also.  
+There is a GUI that handles options but you can use a text editor also.  
 
 There are several settings in `options.ini` that can be set manually (with a text editor)
 
@@ -159,8 +169,6 @@ Set up the name of your text editor in _options_.
 - **Html**
 > Converts the current response or selection to HTML
 and opens it in your default browser.
-- **Options**  
-> launches the Options editing program
 - **Submit Query**
 > Submits prompt to the current AI Model
 >> Ctrl-G and Ctrl-Enter do that too.
@@ -173,8 +181,6 @@ and opens it in your default browser.
 Selecting a different model forces a new conversation
 >> _On startup the "default" model is always selected_  
 The default model is set in options (`options.ini`)
-- **Close**
-> Exit the program. _Ctrl-q_ exits the program without confirmation.
 
 ---
 

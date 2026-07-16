@@ -1,11 +1,19 @@
 [
     {
-        "name": "pname",
-        "text": "prompt text",
+        "name": "General",
+        "text": "You are a helpful assistant.",
         "tags": [
-            "tag",
-            "tab",
-            "gab"
+            "sys",
+            "general 1"
+        ]
+    },
+    {
+        "name": "Programming Assistant",
+        "text": "You are an expert coder and helpful technical assistant.",
+        "tags": [
+            "sys",
+            "coding",
+            "technical"
         ]
     }
 ]
