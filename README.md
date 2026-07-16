@@ -102,7 +102,6 @@ Each play-back is saved in a separate file in the application directory.
         gemini-2.5-flash-lite
         gemini-2.5-flash
         gemini-2.5-pro
-        rag_gemini-2.5.flash-lite
         claude-haiku-4-5
         claude-sonnet-4-6
         claude-opus-4-6
@@ -119,30 +118,42 @@ Each play-back is saved in a separate file in the application directory.
 **Note:**  
     for **local** models obtained from Ollama append the model name with `-local`  
     for **cloud** models obtained from Ollama append the model name with `-cloud`  
-    the `rag-` prefix is used to mark the Gemini model used for **RAG** processing 
+
+---
+
+## Tools
+
+DeskChat is oriented to providing a varied approach to advanced AI chat.
+Tool calling is not used except for some Claud and Gpt models
+where **web-search** is implemented. The **"Web"** button will turn on web-search
+for models where available.
+
+**RAG** was removed from DeskChat in favor of insertion of resource context data
+directly into the user prompting window. A File Input function is provided
+in the Menu.
 
 ---
 
 ## RAG
 
-RAG is handled with extended _context_ in the user prompt area.  
-**File Input** is provided in the tools menu.  
+RAG is handled with extended _context_ in the user input/prompt window.  
+**File Input** is provided in the Menu.  
 Allowed formats are **txt**, **pdf**, and **markdown** file.
 Context limits have increased significantly making this approach reasonable.
 
-Generaly, you want to have your prompt segmented into:  
+Generaly, you want to have user prompting segmented into:  
 
 -        System message
--        Context or document / Prompt
--        Prompt / Context or document
+-        Context or document / User Prompt
+-        User Prompt / Context or document
 
-Also, you can now temporarily change the system prompt from the tools menu.
+Also, you can now temporarily change the system prompt from the Menu.
 
 ---
 
 ## Options
 
-Access options from the tools menu.
+Access options from the Menu.
 
 The `options.ini` file contains all of the options settings.
 
@@ -184,7 +195,7 @@ The default model is set in options (`options.ini`)
 
 ---
 
-## Context menu
+## Context (right-click) menu
 
 Right-Click in the prompt or response area to get a bunch of useful choices.
 

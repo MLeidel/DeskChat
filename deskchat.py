@@ -46,7 +46,7 @@ import vocvlc
 from google import genai
 
 
-apptitle = "deskchat 2.1 "
+apptitle = "deskchat 2.2 "  # menu replaces some KB and button actions
 
 class Application(Frame):
     ''' This tkinter GUI app provides a flexible dual vertical pane
@@ -254,7 +254,7 @@ class Application(Frame):
         self.file_menu.add_command(label="Options", command=self.options)
         self.file_menu.add_command(label="Exit", accelerator="Ctrl+Q", command=self.exit_program)
 
-        self.menu_bar.add_cascade(label="Tools", menu=self.file_menu)
+        self.menu_bar.add_cascade(label="Menu", menu=self.file_menu)
 
 
         # Bindings
