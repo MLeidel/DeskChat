@@ -21,5 +21,62 @@
             "religion",
             "bible"
         ]
+    },
+    {
+        "name": "cnv_2026-07-16_14-11-04.json",
+        "text": "Dinner example\nUses only food on hand.\nsee prompt mgr: \"dinner\" to see full context and prompt.\nUse \"View\" to see the json of the conversation.",
+        "tags": [
+            "food"
+        ]
+    },
+    {
+        "name": "cnv_2026-07-26_19-47-12.json",
+        "text": "Inserting snippets into HTML form fields.",
+        "tags": [
+            "WebKit2",
+            "python3",
+            "Gtk"
+        ]
+    },
+    {
+        "name": "cnv_2026-07-29_09-48-45.json",
+        "text": "Adding items to context menu\nprint page\nfor this example",
+        "tags": [
+            "WebKit2",
+            "Gtk"
+        ]
+    },
+    {
+        "name": "cnv_2026-08-03_15-42-43.json",
+        "text": "wxEditor.py\nBuild editor using gemma4:12b",
+        "tags": [
+            "wxpython",
+            "editor"
+        ]
+    },
+    {
+        "name": "cnv_2026-08-03_16-33-12.json",
+        "text": "Acme\nFix pop-up problem\npop-up to new tab",
+        "tags": [
+            "Acme",
+            "Gtk"
+        ]
+    },
+    {
+        "name": "cnv_2026-08-07_16-15-05.json",
+        "text": "iEdit\nBookmarks",
+        "tags": [
+            "Web",
+            "iEdit"
+        ]
+    },
+    {
+        "name": "cnv_2026-08-31_11-53-31.json",
+        "text": "minibrowser\nUsing note.js and Electron\nUsed gpt-5.6-luna",
+        "tags": [
+            "browser",
+            "node.js",
+            "Electron"
+        ]
     }
 ]

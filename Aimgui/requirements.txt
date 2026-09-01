@@ -1,4 +1,0 @@
-ttkbootstrap
-configparser
-requests
-openai

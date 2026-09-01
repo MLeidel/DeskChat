@@ -200,6 +200,13 @@ class Application(Frame):
         self.cmbo_model.grid(row=1, column=11, sticky='w', pady=(5, 0), padx=(5, 5))
         self.cmbo_model.bind('<<ComboboxSelected>>', self.onComboSelect)
 
+        self.vstats = StringVar()
+        self.lblstats = Label(btn_frame, textvariable=self.vstats)
+        self.lblstats.grid(row=1, column=12, sticky='w', pady=(5, 0), padx=(5, 5))
+        self.vstats.set(self.MyModel)
+
+
+
        # END BUTTON FRAME
 
         # cls = Button(self, text='Close',
@@ -815,6 +822,10 @@ class Application(Frame):
 
         query = self.query.get("1.0", END).strip()
 
+        if query == "":
+             messagebox.showinfo("Prompt", "Nothing entered for user prompt.")
+             return
+
         # see if Conversations Manager has restored a saved Conversations
         # concept: if "restored" exists then a new "conversation.json" exists
         if os.path.exists("./restored"):
@@ -840,7 +851,9 @@ class Application(Frame):
 
         # start timer
         start_time = time.perf_counter()
-
+        # clear status label
+        self.vstats.set("")
+        root.update_idletasks()
         # add the user message (prompt)
         self.conversation.append(
             {"role": "user", "content": query}
@@ -904,6 +917,7 @@ class Application(Frame):
             fout.write(query + "\n\n+++ assistant +++\n\n")
             fout.write(ai_text + "\n")
             fout.write(f"\n====== Aprox Tokens {atk} === Time {minutes}:{seconds} ======" + "\n\n")
+        self.vstats.set(f"Aprox Tokens {atk} --- Time {minutes}:{seconds}")
         # select the input query box
         self.query.tag_add("sel", "1.0", "end-1c")
         self.query.focus_set()

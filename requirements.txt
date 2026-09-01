@@ -7,3 +7,4 @@ ollama
 protobuf
 ttkbootstrap
 Markdown
+pdfplumber

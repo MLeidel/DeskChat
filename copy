@@ -5,8 +5,9 @@
 echo "";echo "";echo ""
 cp -vf deskchat.py ../installations/code/DeskChat/deskchat.py
 cp -vf README.html ../installations/code/DeskChat/README.html
-cp -vf Aimgui/aimgui.py ../installations/code/DeskChat/Aimgui/aimgui.py
-cp -vf Aimgui/README.html ../installations/code/DeskChat/Aimgui/README.html
+cp -vf ms_setup.sh ../installations/code/DeskChat
+cp -vf lsetup.py ../installations/code/DeskChat
+cp -vf requirements.txt ../installations/code/DeskChat
 cd ../installations/code
 zip -r deskchat_install.zip DeskChat
 touch deskchat_install.zip

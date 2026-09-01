@@ -15,5 +15,19 @@
             "coding",
             "technical"
         ]
+    },
+    {
+        "name": "About",
+        "text": "Use this to sketch out, write, store, save important or highly detailed prompt/context user input.",
+        "tags": [
+            "help"
+        ]
+    },
+    {
+        "name": "dinner",
+        "text": "CONTEXT:\n\tIn the refriderator we have:\nlettuce\nbell peper\nred onion\ncherry tomatos\nvarious salad dressings\nyogurt plain and flavored\nmilk\nwheat bread\nswiss cheeze\neggs\nketchup\nsoy sause\nmustard (various)\nfresh cherries\nfrozen corn\nfrozen beans\nfrozen bonless pork chops lean thin\n\tIn the kitchen we have:\nvarious noodles (spaghetti and lasagna)\ncrackers\npeanut butter\npeacons and peanuts\nmany kinds of spices\n\nPROMPT:\nWhat kind of a balanced dinner could I make using just the items we have on hand? Also, the meal needs to be low salt and low sugar.\nPlease provide several options.",
+        "tags": [
+            "food"
+        ]
     }
 ]

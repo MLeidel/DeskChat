@@ -17,7 +17,11 @@ sudo pacman -S tk
 sudo pacman -S pip
 
 pip3 install -r requirements.txt
+
+HIT CTRL-C TO QUIT OR ENTER TO CONTINUE
+
 EOF
+read -n 1
 
 echo __________________________________
 echo Begin installing needed packages
@@ -31,6 +35,10 @@ echo ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 pip3 install -r requirements.txt --break-system-packages
 
+sleep 2
+
+python3 lsetup.py
+
 cat << 'EOF'
 __________________________________
 You will need to set up environmant
@@ -40,5 +48,9 @@ AI company\'s website.
 
 To use Ollama\'s local models download
 the llama app from their website
+__________________________________
+use python3 swab.py
+to start
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 EOF
