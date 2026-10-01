@@ -258,7 +258,7 @@ class Application(Frame):
         self.file_menu.add_command(label="Change Sys Message", command=self.change_sys_msg)
         self.file_menu.add_command(label="Open Selected URL", accelerator="Ctrl+J", command=self.open_selected_url)
         self.file_menu.add_separator()
-        self.file_menu.add_command(label="Options", command=self.options)
+        self.file_menu.add_command(label="Options", accelerator="Ctrl+O", command=self.options)
         self.file_menu.add_command(label="Exit", accelerator="Ctrl+Q", command=self.exit_program)
 
         self.menu_bar.add_cascade(label="Menu", menu=self.file_menu)
@@ -280,6 +280,7 @@ class Application(Frame):
             root.bind("<Control-e>", self.on_md_open)
             root.bind("<Control-i>", self.open_image_maker)
             root.bind("<Control-j>", self.open_selected_url)  # open selected URL in browser
+            root.bind("<Control-o>", self.options)  # open options dialog
         else:
             root.bind("<Command-r>", lambda event: self.query.delete('1.0', 'end'))
             root.bind("<Command-Shift-P>", self.open_conversation_mgr)
@@ -294,6 +295,7 @@ class Application(Frame):
             root.bind("<Command-e>", self.on_md_open)
             root.bind("<Command-i>", self.open_image_maker)
             root.bind("<Command-j>", self.open_selected_url)  # open selected URL in browser
+            root.bind("<Command-o>", self.options)  # open options dialog
 
         self.query.bind("<Button-3>", self.do_pop_query)
         self.txt.bind("<Button-3>", self.do_pop_txt)
@@ -822,10 +824,6 @@ class Application(Frame):
 
         query = self.query.get("1.0", END).strip()
 
-        if query == "":
-             messagebox.showinfo("Prompt", "Nothing entered for user prompt.")
-             return
-
         # see if Conversations Manager has restored a saved Conversations
         # concept: if "restored" exists then a new "conversation.json" exists
         if os.path.exists("./restored"):
@@ -971,6 +969,7 @@ class Application(Frame):
             # messagebox.showinfo("Note", "The text of the previous conversation will remain in the log.")
         self.query.delete("1.0", END)
         self.display_intro()
+        self.vstats.set(self.MyModel)
         self.query.focus_set()
 
     def on_new(self):
@@ -1129,7 +1128,6 @@ class Application(Frame):
             f.write(H)
         webbrowser.open_new_tab(html_path.as_uri())  # opens in default browser
 
-
     def speak_text(self, e=None):
         ''' Speak the query response text
             key, voc, ins, fou, inp
@@ -1179,6 +1177,7 @@ class Application(Frame):
 Ctrl-Shift-D > Delete Log
 Ctrl-Shift-S > Speak the Text
 Ctrl-Return > Submit Query
+Ctrl-O > Open Options
 Ctrl-G > Submit Query
 Ctrl-H > HotKeys help
 Ctrl-F > Find Text
@@ -1195,6 +1194,7 @@ Alt-P > Open Conversation Mgr
 Command-Shift-D > Delete Log
 Command-Shift-S > Speak the Text
 Command-Return > Submit Query
+Command-O > Open Options
 Command-G > Submit Query
 Command-H > HotKeys help
 Command-F > Find Text
