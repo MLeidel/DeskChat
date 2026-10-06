@@ -541,7 +541,6 @@ class Application(Frame):
             response = client.messages.create(
                 model=self.MyModel, # Official ID for Haiku 4.5
                 max_tokens=2048,
-                temperature=float(self.MyTemper),  # REMOVE for Sonnet model
                 system=system_prompt,
                 cache_control={"type": "ephemeral"},
                 messages=self.conversation
