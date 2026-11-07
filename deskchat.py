@@ -253,6 +253,7 @@ class Application(Frame):
         self.file_menu.add_command(label="Image Generator", command=self.open_image_maker)
         self.file_menu.add_command(label="Input File Contents", command=self.input_xfile)
         self.file_menu.add_command(label="Prompts Manager", command=self.open_prompts_mgr)
+        self.file_menu.add_command(label="Edit Log", accelerator="Ctrl+L", command=self.edit_log)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Speak Response", command=self.speak_text)
         self.file_menu.add_command(label="Change Sys Message", command=self.change_sys_msg)
@@ -281,6 +282,7 @@ class Application(Frame):
             root.bind("<Control-i>", self.open_image_maker)
             root.bind("<Control-j>", self.open_selected_url)  # open selected URL in browser
             root.bind("<Control-o>", self.options)  # open options dialog
+            root.bind("<Control-l>", self.edit_log)
         else:
             root.bind("<Command-r>", lambda event: self.query.delete('1.0', 'end'))
             root.bind("<Command-Shift-P>", self.open_conversation_mgr)
@@ -296,6 +298,7 @@ class Application(Frame):
             root.bind("<Command-i>", self.open_image_maker)
             root.bind("<Command-j>", self.open_selected_url)  # open selected URL in browser
             root.bind("<Command-o>", self.options)  # open options dialog
+            root.bind("<Command-l>", self.edit_log)
 
         self.query.bind("<Button-3>", self.do_pop_query)
         self.txt.bind("<Button-3>", self.do_pop_txt)
@@ -1176,6 +1179,7 @@ class Application(Frame):
 Ctrl-Shift-D > Delete Log
 Ctrl-Shift-S > Speak the Text
 Ctrl-Return > Submit Query
+Ctrl-L > Edit Log
 Ctrl-O > Open Options
 Ctrl-G > Submit Query
 Ctrl-H > HotKeys help
@@ -1192,6 +1196,7 @@ Alt-P > Open Conversation Mgr
             msg = '''
 Command-Shift-D > Delete Log
 Command-Shift-S > Speak the Text
+Command-L > Edit Log
 Command-Return > Submit Query
 Command-O > Open Options
 Command-G > Submit Query
@@ -1386,6 +1391,14 @@ Command-Shift-P > Open Conversation Mgr
             os.remove(self.MyPath)
             messagebox.showinfo("Log File",
                                 f"{self.MyPath} Removed.")
+
+    def edit_log(self, e=None):
+        ''' Edit the log file with "MyPath" '''
+        filename = os.getcwd() + '/' + self.MyPath
+        subprocess.Popen([self.MyEditor, filename])
+        # os.system(self.MyEditor + " " + filename)
+        return "break"
+
 
     # convmgr.py
     def open_conversation_mgr(self, e=None):
